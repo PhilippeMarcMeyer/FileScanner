@@ -1,0 +1,1 @@
+c:\users\philippemeyermapping\documents\visual studio 2015\Projects\FileScanner\FileScanner\bin\Debug\FileScanner.exe.config
