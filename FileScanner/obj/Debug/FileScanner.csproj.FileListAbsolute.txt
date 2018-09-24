@@ -1,1 +1,6 @@
 c:\users\philippemeyermapping\documents\visual studio 2015\Projects\FileScanner\FileScanner\bin\Debug\FileScanner.exe.config
+C:\Users\PhilippeMEYERMAPPING\Documents\Visual Studio 2015\Projects\FileScanner\FileScanner\bin\Debug\FileScanner.exe
+C:\Users\PhilippeMEYERMAPPING\Documents\Visual Studio 2015\Projects\FileScanner\FileScanner\bin\Debug\FileScanner.pdb
+C:\Users\PhilippeMEYERMAPPING\Documents\Visual Studio 2015\Projects\FileScanner\FileScanner\obj\Debug\FileScanner.csprojResolveAssemblyReference.cache
+C:\Users\PhilippeMEYERMAPPING\Documents\Visual Studio 2015\Projects\FileScanner\FileScanner\obj\Debug\FileScanner.exe
+C:\Users\PhilippeMEYERMAPPING\Documents\Visual Studio 2015\Projects\FileScanner\FileScanner\obj\Debug\FileScanner.pdb
