@@ -33,66 +33,24 @@ namespace FileScanner
 
             string logFolderName = @"c:\Scanner\";
             string logFile = logFolderName + GetHorodatedFile("deleteLogger_", "txt");
-            string resultFile = logFolderName + GetHorodatedFile("result_", "resx");
+            string resultFile = logFolderName + GetHorodatedFile("result_", "xml");
+
+            List<string> Results = new List<string>();
 
             StreamWriter logPtr = new StreamWriter(logFile);
+
+            StreamWriter resultPtr = new StreamWriter(resultFile);
+
+            StringBuilder sb = new StringBuilder();
 
             string[] keysToDelete = File.ReadAllLines(keysToDeleteFilePath);
 
             XDocument originalFile = null;
+            List<XElement> datas = new List<XElement>();
             try
             {
                 originalFile = XDocument.Load(resFilePath);
-                List<XElement> datas = originalFile.Root.Elements("data").ToList();
-                if (datas != null)
-                {
-                    foreach (XElement item in datas)
-                    {
-                        XName xName = null;
-                        try
-                        {
-                            xName = item.Attribute("name").Value;
-                            string key = xName.ToString();
-                            if (Array.IndexOf(keysToDelete, key) > -1)
-                            {
-                                item.Remove();
-                                logPtr.WriteLine(xName.ToString());
-                                Console.WriteLine(xName.ToString());
-                            }
-                        }
-                        catch (XmlException ex)
-                        {
-                            Console.Error.WriteLine(
-                                string.Format("Error : ({0})", ex.ToString())
-                            );
-                            logPtr.WriteLine("Error : ({0})", ex.ToString());
-                        }
-                    }
-                    // Saving the result
-
-                    XDocument result = new XDocument(
-                        new XElement(originalFile.Root.Name,
-                            from comment in originalFile.Root.Nodes() where comment.NodeType == XmlNodeType.Comment select comment,
-                            from schema in originalFile.Root.Elements() where schema.Name.LocalName == "schema" select schema,
-                            from resheader in originalFile.Root.Elements("resheader") orderby (string)resheader.Attribute("name") select resheader,
-                            from assembly in originalFile.Root.Elements("assembly") orderby (string)assembly.Attribute("name") select assembly,
-                            from metadata in originalFile.Root.Elements("metadata") orderby (string)metadata.Attribute("name") select metadata,
-                            from data in datas orderby (string)data.Attribute("name") select data
-                        )
-                    );
-
-                    try
-                    {
-                        result.Save(resultFile);
-                    }
-                    catch
-                    {
-                        Console.Error.WriteLine(
-                            string.Format("An error occured while writing the file ({0})", resultFile)
-                        );
-                    }
-
-                }
+                datas = originalFile.Root.Elements("data").ToList();
             }
             catch (FileNotFoundException ex)
             {
@@ -107,18 +65,81 @@ namespace FileScanner
             catch (Exception ex)
             {
                 Console.Error.WriteLine(
-                    string.Format("An error occured while reading the file ({0}) : {1}", resFilePath,ex.ToString())
+                    string.Format("An error occured while reading the file ({0}) : {1}", resFilePath, ex.ToString())
                 );
             }
+            if (datas != null)
+                {
+                    foreach (XElement item in datas)
+                    {
+                        XName xName = null;
+                        try
+                        {
+                            xName = item.Attribute("name").Value;
+                            string key = xName.ToString();
+                            if (Array.IndexOf(keysToDelete, key) == -1)
+                            {
+                                //sb.Append(item.ToString()+ "\r\n");
+                                Results.Add(item.ToString() + "\r\n");
+                               Console.WriteLine(item.ToString());
+                                
+                            }
+                        }
+                        catch (XmlException ex)
+                        {
+                            Console.Error.WriteLine(
+                                string.Format("Error : ({0})", ex.ToString())
+                            );
+                            logPtr.WriteLine("Error : ({0})", ex.ToString());
+                        }
+                    }
+            }
 
-           // 
+   
+    
+                    // Saving the result
 
+                    //XDocument result = new XDocument(
+                    //    new XElement(originalFile.Root.Name,
+                    //        from comment in originalFile.Root.Nodes() where comment.NodeType == XmlNodeType.Comment select comment,
+                    //        from schema in originalFile.Root.Elements() where schema.Name.LocalName == "schema" select schema,
+                    //        from resheader in originalFile.Root.Elements("resheader") orderby (string)resheader.Attribute("name") select resheader,
+                    //        from assembly in originalFile.Root.Elements("assembly") orderby (string)assembly.Attribute("name") select assembly,
+                    //        from metadata in originalFile.Root.Elements("metadata") orderby (string)metadata.Attribute("name") select metadata,
+                    //        from data in datas orderby (string)data.Attribute("name") select data
+                    //    )
+                    //);
 
-           // StreamWriter resultPtr = new StreamWriter(resultFile);
+                    //try
+                    //{
+                    //    result.Save(resultFile);
+                    //}
+                    //catch
+                    //{
+                    //    Console.Error.WriteLine(
+                    //        string.Format("An error occured while writing the file ({0})", resultFile)
+                    //    );
+                    //}
+
  
-           // originalFile.Save(resultPtr, SaveOptions.None);
 
-            ConsoleKeyInfo info = Console.ReadKey();
+
+            foreach(string result in Results)
+            {
+                resultPtr.WriteLine(result);
+            }
+            // 
+           // resultPtr.WriteLine(sb.ToString());
+
+           // resultPtr.WriteLine("----");
+
+            System.Threading.Thread.Sleep(
+    (int)System.TimeSpan.FromSeconds(3).TotalMilliseconds);
+            // StreamWriter resultPtr = new StreamWriter(resultFile);
+
+            // originalFile.Save(resultPtr, SaveOptions.None);
+
+            // ConsoleKeyInfo info = Console.ReadKey();
         }
 
         public static string GetHorodatedFile(string shortFileName,string extension)
@@ -140,7 +161,7 @@ namespace FileScanner
             string resourcesToFindFile = logFolderName + "exchanges.txt";
             string consoleLog = logFolderName + "console_" + app + ".txt";
             string resultFile = logFolderName + GetHorodatedFile("results_","txt");
-
+            
             string[] words = System.IO.File.ReadAllLines(resourcesToFindFile);
             foreach (string word in words)
             {
@@ -224,8 +245,9 @@ namespace FileScanner
                                     found = true;
                                     fileModified = true;
 
-                                    Console.WriteLine("found : " + oldString);
                                     consolePtr.WriteLine("found : " + oldString);
+                                    Console.WriteLine("found : " + oldString);
+
                                 }
 
                             }

@@ -30,8 +30,8 @@ namespace FileScanner
             */
             //Console.WriteLine( Utils.GetHorodatedFile("myFile", "xml"));
 
-            string resFilePath = @"C:\Scanner\Resources2.resx";
-            string keysToDeleteFilePath = @"C:\Scanner\missing__20180927T113008.txt";
+            string resFilePath = @"C:\Scanner\ResourcesTest.resx";
+            string keysToDeleteFilePath = @"C:\Scanner\missingTest.txt";
             Utils.DeleteKeysInResourceFile(resFilePath, keysToDeleteFilePath);
         }
 
