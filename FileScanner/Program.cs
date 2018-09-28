@@ -5,253 +5,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace FileScanner
 {
     class Program
     {
         static void Main(string[] args)
         {
-            string app = "WorkFlow";
-            string root = @"C:\Git\EconomikV2\PlatForm\"+ app + "\\";
+            /*
+            string app = "";
+            string root = @"C:\Git\EconomikV2\PlatForm\";
+            if(app != "")
+            {
+                root += app + "\\";
 
-            List<Pattern> patterns = new List<Pattern> {
-                new Pattern // .aspx
-                {
-                    begin = "<% =Common.App_GlobalResources.Resources.",
-                    end = " %>",
-                    ext = ".aspx"
-                },
-                new Pattern // .aspx
-                {
-                    begin = "<% =Common.App_GlobalResources.Resources.",
-                    end = "%>",
-                    ext = ".aspx"
-                },
-                new Pattern // .aspx
-                {
-                    begin = "<%=Common.App_GlobalResources.Resources.",
-                    end = " %>",
-                    ext = ".aspx"
-                },
-                new Pattern // .aspx
-                {
-                    begin = "<%=Common.App_GlobalResources.Resources.",
-                    end = "%>",
-                    ext = ".aspx"
-                },
-                new Pattern // .aspx
-                {
-                    begin = "<%=Resources.",
-                    end = " %>",
-                    ext = ".aspx"
-                },
-                new Pattern // .aspx
-                {
-                    begin = "<%=Resources.",
-                    end = "%>",
-                    ext = ".aspx"
-                },
-                new Pattern // .asp
-                {
-                    begin = "<%=",
-                    end = " %>",
-                    ext = ".asp"
-                },
-                new Pattern // .asp
-                {
-                    begin = "<%=",
-                    end = "%>",
-                    ext = ".asp"
-                },
-                new Pattern // .cs
-                {
-                    begin = "Resources.",
-                    end = ";",
-                    ext = ".cs"
-                },
-                new Pattern // .cs
-                {
-                    begin = "Resources.",
-                    end = ",",
-                    ext = ".cs"
-                },
-                 new Pattern // .cs
-                {
-                    begin = "Resources.",
-                    end = ")",
-                    ext = ".cs"
-                },
-                new Pattern // .cs
-                {
-                    begin = "Resources",
-                    end = " ",
-                    ext = ".cs"
-                },
-                new Pattern // .js
-                {
-                    begin = "resources.get('",
-                    end = "')",
-                    ext = ".js"
-                },
-                  new Pattern // .js
-                {
-                    begin = "resources.get(\"",
-                    end = "\")",
-                    ext = ".js"
-                },
-            };
-
+            }
             string[] extensions = new string[] { "aspx", "asp", "cs", "ascx", "js" };
 
-            List<Replacement> replacements = new List<Replacement>();
+            List<Pattern> patterns = Utils.GetPatterns();
 
-            DateTime start = DateTime.Now;
-            string tag = string.Format("{0:s}", start);
-            tag = tag.Replace("-", "");
-            tag = tag.Replace(":", "");
-            string logFolderName = @"c:\Scanner\";
-            string resourcesToFindFile = logFolderName + "exchanges.txt";
-            string consoleLog = logFolderName + "console_"+ app + ".txt";
-            string resultFile = logFolderName + "results_" + tag + ".txt";
+            // Utils.ScanAndReplace(root, app, patterns, extensions);
 
-            string[] words = System.IO.File.ReadAllLines(resourcesToFindFile);
-            foreach (string word in words)
-            {
-                int position = word.IndexOf(";");
-                if (position != -1)
-                {
-                    replacements.Add(new Replacement
-                    {
-                        replaced = word.Substring(0, position),
-                        by = word.Substring(position + 1)
-                    });
-                }
-            }
+            // Utils.CheckIfExist(root, app, patterns);
+            */
+            //Console.WriteLine( Utils.GetHorodatedFile("myFile", "xml"));
 
-            StreamWriter consolePtr = new StreamWriter(consoleLog);
-
-
-            Encoding utf8 = Encoding.UTF8;
-            Encoding utf16 = Encoding.Unicode;
-            Encoding ASCII = Encoding.ASCII;
-
-            using (System.IO.StreamWriter filePtr = new System.IO.StreamWriter(resultFile))
-            {
-
-                var files = Directory.GetFiles(root, "*.*", SearchOption.AllDirectories)
-                      .Where(s => s.EndsWith(".aspx") || s.EndsWith(".asp") || s.EndsWith(".cs") || s.EndsWith(".ascx") || s.EndsWith(".js"));
-
-                long nrFiles = files.LongCount();
-
-                filePtr.WriteLine(root + " : " + nrFiles.ToString() + " files");
-
-                int i = 0;
-                foreach (string file in files)
-                {
-                    bool fileModified = false;
-                    // filePtr.WriteLine(file);
-                    i++;
-                    string message = string.Format("{0}/{1} => {2}", i, nrFiles, file);
-                    Console.WriteLine("reading file : " + message);
-                    consolePtr.WriteLine("reading file : " + message);
-                    string[] lines = System.IO.File.ReadAllLines(file);
-                    string ext = Path.GetExtension(file);
-
-                    List<Pattern> pattersForExt = patterns.Where(x => x.ext == ext).ToList();
-                    for (int lineOffset = 0; lineOffset < lines.Length; lineOffset++)
-                    {
-                        var line = lines[lineOffset];
-                        bool found = false;
-                        foreach (Pattern pattern in pattersForExt)
-                        {
-                            foreach (Replacement replacement in replacements)
-                            {
-                                string oldString = pattern.begin + replacement.replaced + pattern.end;
-                                string newString = pattern.begin + replacement.by + pattern.end;
-                                string testLine = line;
-                                string oldStringTest = oldString;
-                                string newStringTest = newString;
-                                if (file.EndsWith("asp"))
-                                {
-                                    testLine = testLine.ToUpper();
-                                    oldStringTest = oldStringTest.ToUpper();
-                                    newStringTest = newStringTest.ToUpper();
-                                }
-                                int position = testLine.IndexOf(oldStringTest);
-                                if (position != -1)
-                                {
-                                    string startLine = "";
-                                    if (position > 0)
-                                    {
-                                        startLine = line.Substring(0, position);
-
-                                    }
-                                    string endLine = line.Substring(position + oldString.Length);
-                                    var prev = line;
-                                    line = startLine + newString + endLine;
-
-                                    filePtr.WriteLine(file);
-                                    filePtr.WriteLine(prev);
-                                    filePtr.WriteLine(line);
-                                    filePtr.WriteLine("");
-                                    found = true;
-                                    fileModified = true;
-
-                                    Console.WriteLine("found : " + oldString);
-                                    consolePtr.WriteLine("found : " + oldString);
-                                }
-
-                            }
-                        }
-
-                        if (found)
-                        {
-                            lines[lineOffset] = line;
-                        }
-                    }
-
-                    if (fileModified)
-                    {
-                        string info = "?";
-                        Encoding enc = Utils.GetEncoding(file);
-                        File.WriteAllLines(file, lines, enc);
-                        if (enc.Equals(utf8))
-                        {
-                            info = "utf8";
-                        }
-                        else if (enc.Equals(utf16))
-                        {
-                            info = "utf16";
-
-                        }
-                        else if (enc.Equals(ASCII))
-                        {
-                            info = "ASCII";
-                        }
-
-                        Console.WriteLine("modified : " + file + " encode : " + info);
-                        consolePtr.WriteLine("modified : " + file + " encode : " + info);
-                    }
-                }
-            }
+            string resFilePath = @"C:\Scanner\Resources2.resx";
+            string keysToDeleteFilePath = @"C:\Scanner\missing__20180927T113008.txt";
+            Utils.DeleteKeysInResourceFile(resFilePath, keysToDeleteFilePath);
         }
-    }
-
-    public class Pattern
-    {
-        public string begin { get; set; }
-        public string end { get; set; }
-        public string ext { get; set; }
-    }
-
-    public class Replacement
-    {
-        public string replaced { get; set; }
-        public string by { get; set; }
 
     }
-
-
 }
 
 
