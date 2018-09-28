@@ -4,4 +4,4 @@ Find occurences of a list of words in files given extensions and replace them, s
 the patterns of replacement differ from one type of file to another
 The keys to replace and their replacements ar given in a text ; separated file
 
-2018-09-28 : added DeleteKeysInResourceFile() 
+2018-09-28 : added which removes the xml nodes in the resources file with a given text file one key per line
