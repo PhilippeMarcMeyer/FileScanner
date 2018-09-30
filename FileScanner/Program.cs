@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Xml;
 
 namespace FileScanner
 {
@@ -29,10 +29,13 @@ namespace FileScanner
             // Utils.CheckIfExist(root, app, patterns);
             */
             //Console.WriteLine( Utils.GetHorodatedFile("myFile", "xml"));
-
-            string resFilePath = @"C:\Scanner\ResourcesTest.resx";
-            string keysToDeleteFilePath = @"C:\Scanner\missingTest.txt";
+         
+            string resFilePath = @"D:\_Developpement\GITHUB\FileScanner\tests\ResourcesTest.resx";
+            string keysToDeleteFilePath = @"D:\_Developpement\GITHUB\FileScanner\tests\missingTest.txt";
             Utils.DeleteKeysInResourceFile(resFilePath, keysToDeleteFilePath);
+          
+
+
         }
 
     }

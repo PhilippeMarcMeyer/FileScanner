@@ -4,3 +4,9 @@ C:\Users\PhilippeMEYERMAPPING\Documents\Visual Studio 2015\Projects\FileScanner\
 C:\Users\PhilippeMEYERMAPPING\Documents\Visual Studio 2015\Projects\FileScanner\FileScanner\obj\Debug\FileScanner.csprojResolveAssemblyReference.cache
 C:\Users\PhilippeMEYERMAPPING\Documents\Visual Studio 2015\Projects\FileScanner\FileScanner\obj\Debug\FileScanner.exe
 C:\Users\PhilippeMEYERMAPPING\Documents\Visual Studio 2015\Projects\FileScanner\FileScanner\obj\Debug\FileScanner.pdb
+D:\_Developpement\GITHUB\FileScanner\FileScanner\bin\Debug\FileScanner.exe.config
+D:\_Developpement\GITHUB\FileScanner\FileScanner\bin\Debug\FileScanner.exe
+D:\_Developpement\GITHUB\FileScanner\FileScanner\bin\Debug\FileScanner.pdb
+D:\_Developpement\GITHUB\FileScanner\FileScanner\obj\Debug\FileScanner.csprojResolveAssemblyReference.cache
+D:\_Developpement\GITHUB\FileScanner\FileScanner\obj\Debug\FileScanner.exe
+D:\_Developpement\GITHUB\FileScanner\FileScanner\obj\Debug\FileScanner.pdb

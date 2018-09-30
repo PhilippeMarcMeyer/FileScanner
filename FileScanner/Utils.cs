@@ -6,6 +6,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 
+
 namespace FileScanner
 {
     public class Utils
@@ -29,117 +30,53 @@ namespace FileScanner
 
         public static void DeleteKeysInResourceFile(string resFilePath,string keysToDeleteFilePath)
         {
-
-
-            string logFolderName = @"c:\Scanner\";
-            string logFile = logFolderName + GetHorodatedFile("deleteLogger_", "txt");
+            string logFolderName = @"D:\_Developpement\GITHUB\FileScanner\tests\";
             string resultFile = logFolderName + GetHorodatedFile("result_", "xml");
 
-            List<string> Results = new List<string>();
 
-            StreamWriter logPtr = new StreamWriter(logFile);
+            // Preparing the result xml document
+            XmlDocument doc = new XmlDocument();
 
-            StreamWriter resultPtr = new StreamWriter(resultFile);
-
-            StringBuilder sb = new StringBuilder();
-
+            // Getting the keys to delete
             string[] keysToDelete = File.ReadAllLines(keysToDeleteFilePath);
 
-            XDocument originalFile = null;
-            List<XElement> datas = new List<XElement>();
-            try
+            // Reading the xml document
+            XElement allData = XElement.Load(resFilePath);
+            if (allData != null)
             {
-                originalFile = XDocument.Load(resFilePath);
-                datas = originalFile.Root.Elements("data").ToList();
-            }
-            catch (FileNotFoundException ex)
-            {
-                Console.Error.WriteLine("File not found ({0})", resFilePath);
-            }
-            catch (XmlException ex)
-            {
-                Console.Error.WriteLine(
-                    string.Format("The file does not contain valid XML ({0})", resFilePath)
-                );
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(
-                    string.Format("An error occured while reading the file ({0}) : {1}", resFilePath, ex.ToString())
-                );
-            }
-            if (datas != null)
+                XmlNode rootNode = doc.CreateElement("root"); // This overload assumes the document already knows about the rdf schema as it is in the Schemas set
+                doc.AppendChild(rootNode);
+                IEnumerable<XElement> datas = allData.Descendants("data");
+                foreach (XElement data in datas)
                 {
-                    foreach (XElement item in datas)
+                    string key = data.Attribute("name").ToString();
+                    string translation = data.Element("value").Value;
+                    XElement commentPtr = data.Element("comment");
+                    string comment = (commentPtr != null) ? commentPtr.Value : "";
+
+                    if (Array.IndexOf(keysToDelete, key) == -1)
                     {
-                        XName xName = null;
-                        try
+                        XmlElement el = doc.CreateElement("data");
+                        el.SetAttribute("name", key);
+                        el.SetAttribute("xml:space", "preserve");
+                        el.AppendChild(doc.CreateElement("value")).InnerText = "translation";
+                        if(comment != "")
                         {
-                            xName = item.Attribute("name").Value;
-                            string key = xName.ToString();
-                            if (Array.IndexOf(keysToDelete, key) == -1)
-                            {
-                                //sb.Append(item.ToString()+ "\r\n");
-                                Results.Add(item.ToString() + "\r\n");
-                               Console.WriteLine(item.ToString());
-                                
-                            }
+                            el.AppendChild(doc.CreateElement("comment")).InnerText = comment;
                         }
-                        catch (XmlException ex)
-                        {
-                            Console.Error.WriteLine(
-                                string.Format("Error : ({0})", ex.ToString())
-                            );
-                            logPtr.WriteLine("Error : ({0})", ex.ToString());
-                        }
+                        rootNode.AppendChild(el);
                     }
+
+                  
+
+                }
+
+               
+                doc.Save(resultFile);
             }
 
-   
-    
-                    // Saving the result
-
-                    //XDocument result = new XDocument(
-                    //    new XElement(originalFile.Root.Name,
-                    //        from comment in originalFile.Root.Nodes() where comment.NodeType == XmlNodeType.Comment select comment,
-                    //        from schema in originalFile.Root.Elements() where schema.Name.LocalName == "schema" select schema,
-                    //        from resheader in originalFile.Root.Elements("resheader") orderby (string)resheader.Attribute("name") select resheader,
-                    //        from assembly in originalFile.Root.Elements("assembly") orderby (string)assembly.Attribute("name") select assembly,
-                    //        from metadata in originalFile.Root.Elements("metadata") orderby (string)metadata.Attribute("name") select metadata,
-                    //        from data in datas orderby (string)data.Attribute("name") select data
-                    //    )
-                    //);
-
-                    //try
-                    //{
-                    //    result.Save(resultFile);
-                    //}
-                    //catch
-                    //{
-                    //    Console.Error.WriteLine(
-                    //        string.Format("An error occured while writing the file ({0})", resultFile)
-                    //    );
-                    //}
 
  
-
-
-            foreach(string result in Results)
-            {
-                resultPtr.WriteLine(result);
-            }
-            // 
-           // resultPtr.WriteLine(sb.ToString());
-
-           // resultPtr.WriteLine("----");
-
-            System.Threading.Thread.Sleep(
-    (int)System.TimeSpan.FromSeconds(3).TotalMilliseconds);
-            // StreamWriter resultPtr = new StreamWriter(resultFile);
-
-            // originalFile.Save(resultPtr, SaveOptions.None);
-
-            // ConsoleKeyInfo info = Console.ReadKey();
         }
 
         public static string GetHorodatedFile(string shortFileName,string extension)
