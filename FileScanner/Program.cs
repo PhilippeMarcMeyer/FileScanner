@@ -29,12 +29,19 @@ namespace FileScanner
             // Utils.CheckIfExist(root, app, patterns);
             */
             //Console.WriteLine( Utils.GetHorodatedFile("myFile", "xml"));
-         
-            string resFilePath = @"D:\_Developpement\GITHUB\FileScanner\tests\ResourcesTest.resx";
-            string keysToDeleteFilePath = @"D:\_Developpement\GITHUB\FileScanner\tests\missingTest.txt";
-            Utils.DeleteKeysInResourceFile(resFilePath, keysToDeleteFilePath);
-          
 
+            //string resFilePath = @"C:\Scanner\resources2.resx";
+            //string keysToDeleteFilePath = @"C:\Scanner\missing__20180927T113008.txt";
+            //Utils.DeleteKeysInResourceFile(resFilePath, keysToDeleteFilePath);
+
+            string resFilePath = @"C:\Scanner\resources2.resx";
+            string keysToExtractFilePath = @"C:\Scanner\enum_reintegrer.txt";
+
+            Utils.ExtractKeysInResourceFile(resFilePath, keysToExtractFilePath);
+
+            //string resFilePath = @"C:\Scanner\tests\extract_20181002T124835.xml";
+            //string keysToDeleteFilePath = @"C:\Scanner\resall.txt";
+            //Utils.DeleteKeysInResourceFile(resFilePath, keysToDeleteFilePath);
 
         }
 

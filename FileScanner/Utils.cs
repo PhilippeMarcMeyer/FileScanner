@@ -6,7 +6,6 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 
-
 namespace FileScanner
 {
     public class Utils
@@ -30,12 +29,15 @@ namespace FileScanner
 
         public static void DeleteKeysInResourceFile(string resFilePath,string keysToDeleteFilePath)
         {
-            string logFolderName = @"D:\_Developpement\GITHUB\FileScanner\tests\";
+            string logFolderName = @"C:\Scanner\tests\";
             string resultFile = logFolderName + GetHorodatedFile("result_", "xml");
 
-
             // Preparing the result xml document
-            XmlDocument doc = new XmlDocument();
+            XmlTextWriter xmlWriter = new XmlTextWriter(resultFile,System.Text.Encoding.UTF8);
+            xmlWriter.Formatting = Formatting.Indented;
+            xmlWriter.WriteStartDocument();
+            xmlWriter.WriteComment("Result file");
+            xmlWriter.WriteStartElement("root");
 
             // Getting the keys to delete
             string[] keysToDelete = File.ReadAllLines(keysToDeleteFilePath);
@@ -44,40 +46,81 @@ namespace FileScanner
             XElement allData = XElement.Load(resFilePath);
             if (allData != null)
             {
-                XmlNode rootNode = doc.CreateElement("root"); // This overload assumes the document already knows about the rdf schema as it is in the Schemas set
-                doc.AppendChild(rootNode);
+               
                 IEnumerable<XElement> datas = allData.Descendants("data");
                 foreach (XElement data in datas)
                 {
-                    string key = data.Attribute("name").ToString();
+                    string key = data.Attribute("name").Value;
                     string translation = data.Element("value").Value;
                     XElement commentPtr = data.Element("comment");
-                    string comment = (commentPtr != null) ? commentPtr.Value : "";
-
                     if (Array.IndexOf(keysToDelete, key) == -1)
                     {
-                        XmlElement el = doc.CreateElement("data");
-                        el.SetAttribute("name", key);
-                        el.SetAttribute("xml:space", "preserve");
-                        el.AppendChild(doc.CreateElement("value")).InnerText = "translation";
-                        if(comment != "")
+                        xmlWriter.WriteStartElement("data");
+                        xmlWriter.WriteAttributeString("name", key);
+                        xmlWriter.WriteAttributeString("xml:space", "preserve");
+
+                        xmlWriter.WriteElementString("value", translation);
+                        if (commentPtr != null)
                         {
-                            el.AppendChild(doc.CreateElement("comment")).InnerText = comment;
+                            xmlWriter.WriteElementString("comment", commentPtr.Value);
                         }
-                        rootNode.AppendChild(el);
+                        xmlWriter.WriteEndElement();
                     }
-
-                  
-
                 }
-
-               
-                doc.Save(resultFile);
+                xmlWriter.WriteEndElement();
+                xmlWriter.WriteEndDocument();
+                xmlWriter.Flush();
+                xmlWriter.Close();
             }
-
-
- 
         }
+
+        public static void ExtractKeysInResourceFile(string resFilePath, string keysToExtractFilePath)
+        {
+            string logFolderName = @"C:\Scanner\tests\";
+            string resultFile = logFolderName + GetHorodatedFile("extract_", "xml");
+
+            // Preparing the result xml document
+            XmlTextWriter xmlWriter = new XmlTextWriter(resultFile, System.Text.Encoding.UTF8);
+            xmlWriter.Formatting = Formatting.Indented;
+            xmlWriter.WriteStartDocument();
+            xmlWriter.WriteComment("Result file");
+            xmlWriter.WriteStartElement("root");
+
+            // Getting the keys to delete
+            string[] keysToExtract = File.ReadAllLines(keysToExtractFilePath);
+
+            // Reading the xml document
+            XElement allData = XElement.Load(resFilePath);
+            if (allData != null)
+            {
+
+                IEnumerable<XElement> datas = allData.Descendants("data");
+                foreach (XElement data in datas)
+                {
+                    string key = data.Attribute("name").Value;
+                    string translation = data.Element("value").Value;
+                    XElement commentPtr = data.Element("comment");
+                    if (Array.IndexOf(keysToExtract, key) != -1)
+                    {
+                        xmlWriter.WriteStartElement("data");
+                        xmlWriter.WriteAttributeString("name", key);
+                        xmlWriter.WriteAttributeString("xml:space", "preserve");
+
+                        xmlWriter.WriteElementString("value", translation);
+                        if (commentPtr != null)
+                        {
+                            xmlWriter.WriteElementString("comment", commentPtr.Value);
+                        }
+                        xmlWriter.WriteEndElement();
+                    }
+                }
+                xmlWriter.WriteEndElement();
+                xmlWriter.WriteEndDocument();
+                xmlWriter.Flush();
+                xmlWriter.Close();
+            }
+        }
+
 
         public static string GetHorodatedFile(string shortFileName,string extension)
         {
